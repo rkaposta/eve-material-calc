@@ -1,7 +1,7 @@
 'use strict'
 
 import { app, BrowserWindow } from 'electron'
-import BlueprintLoader from './model/BlueprintLoader';
+import BlueprintLoader from './BlueprintLoader';
 
 /**
  * Set `__static` path to static files in production

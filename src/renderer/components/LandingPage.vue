@@ -1,37 +1,38 @@
 <template>
   <div id="wrapper">
+      <input v-model="queryText" >
       <button class="alt" @click="getBlueprint()">Gogogo</button>
-      <div id="asd">Here it is!</div>
+      <div>Here it is!</div>
+      <resolved-blueprint />
       <composite-material v-if="content" :material="content"></composite-material>
   </div>
 </template>
 
 <script>
+ // import { BLUEPRINT_MATERIALS_RESOLVED } from 'main/Events';
   import SystemInformation from './LandingPage/SystemInformation'
   import CompositeMaterial from './CompositeMaterial'
+  import ResolvedBlueprint from './ResolvedBlueprint'
   import { ipcRenderer } from 'electron';
 
   export default {
     name: 'landing-page',
-    components: { SystemInformation, CompositeMaterial },
+    components: { SystemInformation, CompositeMaterial, ResolvedBlueprint },
     data() {
       return {
+        queryText: 'Paladin',
         content: null
       }
     },
     mounted() {
-      ipcRenderer.on('getBp', (event, arg) => {
-        this.content = arg;
+      ipcRenderer.on('BLUEPRINT_MATERIALS_RESOLVED', (event, content) => {
+        this.content = content;
       });
     },
     methods: {
       getBlueprint() {
-        console.log('sending getBp');
-        ipcRenderer.send('getBp', 'Paladin');
-        console.log('getBp sent');
-      },
-      open (link) {
-        this.$electron.shell.openExternal(link)
+        this.content = null;
+        ipcRenderer.send('getBp', this.queryText);
       }
     }
   }

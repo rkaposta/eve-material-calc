@@ -1,7 +1,5 @@
 <template>
   <div>
-    Name: {{ material.blueprint.displayName }}<br>
-    Quantity: {{ material.quantity }}<br>
     <div>
       --------------------<br>
       Materials:
