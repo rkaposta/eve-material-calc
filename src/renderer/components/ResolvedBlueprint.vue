@@ -1,7 +1,8 @@
 <template>
   <div>
     Name: {{ resolvedBlueprint }}<br>
-    ME: <input v-model="materialEfficiency" ><br>
+    BP ME: <input v-model="materialEfficiency" ><br>
+    SubComponent ME: <input v-model="subMaterialEfficiency" ><br>
     <button @click="calcMaterials">Calculate Materials</button>
   </div>
 </template>
@@ -14,13 +15,17 @@
       return {
         bpDef: null,
         materialEfficiency: 0,
+        subMaterialEfficiency: 0,
         resolvedBlueprint: 'no blueprint found'
       }
     },
     methods: {
       calcMaterials() {
         if (this.bpDef) {
-          ipcRenderer.send('calcBp', this.bpDef, this.materialEfficiency);
+          console.log('sending calcBp', this.bpDef);
+          ipcRenderer.send('calcBp', this.bpDef, this.materialEfficiency, this.subMaterialEfficiency);
+        } else {
+          console.log('no bpDef');
         }
       }
     },

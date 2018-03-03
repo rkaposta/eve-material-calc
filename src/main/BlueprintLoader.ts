@@ -14,6 +14,7 @@ export default class BlueprintLoader {
     bp: {},
     r: {},
   };
+  subMaterialEfficiency = 0;
   blueprints: any;
   constructor() {
     db.blueprints().then((blueprints) => {
@@ -28,13 +29,14 @@ export default class BlueprintLoader {
         }
       });
     });
-    ipcMain.on('calcBp', (event, bpDef, materialEfficiency) => {
+    ipcMain.on('calcBp', (event, bpDef, materialEfficiency, subMaterialEfficiency) => {
+        this.subMaterialEfficiency = subMaterialEfficiency;
         // TODO why is this hack needed for the UI to be responsive???
         setTimeout(() => {
           this.buildBlueprintFromBpDef(bpDef).then((bp) => {
             bp.materialEfficiency = materialEfficiency;
             bp.totalMat = getTotalMaterials(bp);
-            event.sender.send(BLUEPRINT_MATERIALS_RESOLVED, new CompositeMaterial(0, 1, bp));
+            event.sender.send(BLUEPRINT_MATERIALS_RESOLVED, new CompositeMaterial(0, 1, '', bp));
           });
         }, 500);
     });
@@ -75,7 +77,7 @@ export default class BlueprintLoader {
     let bp = this.blueprints[bpDef.id];
     let materials = await this.collectMaterials(bp, bpDef.reaction);
     let output = bpDef.reaction ? bp.activities.reaction.products[0].quantity : bp.activities.manufacturing.products[0].quantity;
-    return new Blueprint(bpDef.id, bpDef.name.en, output, materials.materials, materials.composites);
+    return new Blueprint(bpDef.id, bpDef.name.en, output, materials.materials, materials.composites, bpDef.reaction ? 0 : this.subMaterialEfficiency);
   }
 
   isMaterialComposite(material) {
@@ -113,6 +115,6 @@ export default class BlueprintLoader {
   async createCompositeMaterial(element): Promise<CompositeMaterial> {
     let elementName = await db.lookupByID(element.typeID);
     let bpDef = await this.findBlueprint(elementName.name.en);
-    return new CompositeMaterial(element.typeID, element.quantity, await this.buildBlueprintFromBpDef(bpDef));
+    return new CompositeMaterial(element.typeID, element.quantity, elementName.name.en, await this.buildBlueprintFromBpDef(bpDef));
   }
 }
