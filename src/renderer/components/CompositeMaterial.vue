@@ -5,7 +5,7 @@
       Materials:
         <ul>
            <li v-for="item in material.blueprint.totalMat">
-            {{ item.displayName }}: {{ item.quantity }}
+            {{ item.displayName }}: {{ new Intl.NumberFormat('hu-HU').format(item.quantity) }}
           </li>
         </ul>
     </div>

@@ -23,18 +23,20 @@ export default class BlueprintLoader {
       this.findBlueprint(bpName).then((bpDef) => {
         if (bpDef) {
           event.sender.send(BLUEPRINT_RESOLVED, bpDef);
-          console.log('event sent');
-          // TODO why is this hack needed for the UI to be responsive???
-          setTimeout(() => {
-            this.buildBlueprintFromBpDef(bpDef).then((bp) => {
-              bp.totalMat = getTotalMaterials(bp);
-              event.sender.send(BLUEPRINT_MATERIALS_RESOLVED, new CompositeMaterial(0, 1, bp));
-            });
-          }, 500);
         } else {
           event.sender.send(BLUEPRINT_RESOLVED, undefined, 'blueprint not found for ' + bpName);
         }
       });
+    });
+    ipcMain.on('calcBp', (event, bpDef, materialEfficiency) => {
+        // TODO why is this hack needed for the UI to be responsive???
+        setTimeout(() => {
+          this.buildBlueprintFromBpDef(bpDef).then((bp) => {
+            bp.materialEfficiency = materialEfficiency;
+            bp.totalMat = getTotalMaterials(bp);
+            event.sender.send(BLUEPRINT_MATERIALS_RESOLVED, new CompositeMaterial(0, 1, bp));
+          });
+        }, 500);
     });
   }
   

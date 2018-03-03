@@ -1,4 +1,4 @@
 
 export default class Material {
-  constructor(public typeID: number, public quantity: number, public displayName: string) {}
+  constructor(public typeId: number, public quantity: number, public displayName: string) {}
 }
